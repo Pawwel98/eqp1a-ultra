@@ -42,6 +42,9 @@ public:
     PultecDSP::PultecEQP1AMasterEngine dspEngine;
 
     void applyFactoryPreset(int presetIndex);
+    juce::File getUserPresetsFolder() const;
+    bool saveUserPresetToFile(const juce::File& file);
+    bool loadUserPresetFromFile(const juce::File& file);
 
 private:
     void syncDSPFromParameters();

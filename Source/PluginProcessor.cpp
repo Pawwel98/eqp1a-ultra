@@ -27,9 +27,10 @@ juce::AudioProcessorValueTreeState::ParameterLayout PultecEQP1AAudioProcessor::c
         juce::ParameterID{ "tube_drive_db", 1 }, "Tube & Transformer Drive",
         juce::NormalisableRange<float>(-12.0f, 18.0f, 0.1f), 2.5f));
 
+    // Authentic 4-position Pultec EQP-1A Low Frequency selector: 20, 30, 60, 100 CPS
     params.push_back(std::make_unique<juce::AudioParameterChoice>(
         juce::ParameterID{ "low_freq", 1 }, "Low Frequency (CPS)",
-        juce::StringArray{ "20 CPS", "30 CPS", "45 CPS", "60 CPS", "100 CPS", "150 CPS" }, 1));
+        juce::StringArray{ "20 CPS", "30 CPS", "60 CPS", "100 CPS" }, 1));
 
     params.push_back(std::make_unique<juce::AudioParameterFloat>(
         juce::ParameterID{ "low_boost", 1 }, "Low Boost",
@@ -39,9 +40,10 @@ juce::AudioProcessorValueTreeState::ParameterLayout PultecEQP1AAudioProcessor::c
         juce::ParameterID{ "low_atten", 1 }, "Low Atten",
         juce::NormalisableRange<float>(0.0f, 10.0f, 0.01f), 0.0f));
 
+    // Authentic 7-position Pultec EQP-1A High Boost Frequency selector: 3, 4, 5, 8, 10, 12, 16 KCS
     params.push_back(std::make_unique<juce::AudioParameterChoice>(
         juce::ParameterID{ "high_boost_freq", 1 }, "High Boost Freq (KCS)",
-        juce::StringArray{ "3 KCS", "4 KCS", "5 KCS", "8 KCS", "10 KCS", "12 KCS", "16 KCS", "20 KCS" }, 5));
+        juce::StringArray{ "3 KCS", "4 KCS", "5 KCS", "8 KCS", "10 KCS", "12 KCS", "16 KCS" }, 5));
 
     params.push_back(std::make_unique<juce::AudioParameterFloat>(
         juce::ParameterID{ "high_boost", 1 }, "High Boost",
@@ -51,6 +53,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout PultecEQP1AAudioProcessor::c
         juce::ParameterID{ "bandwidth", 1 }, "Bandwidth (Sharp-Broad)",
         juce::NormalisableRange<float>(0.0f, 10.0f, 0.01f), 5.0f));
 
+    // Authentic 3-position Pultec EQP-1A High Attenuation Selector: 5, 10, 20 KCS
     params.push_back(std::make_unique<juce::AudioParameterChoice>(
         juce::ParameterID{ "high_atten_freq", 1 }, "High Atten Sel (KCS)",
         juce::StringArray{ "5 KCS", "10 KCS", "20 KCS" }, 2));
@@ -88,7 +91,7 @@ bool PultecEQP1AAudioProcessor::producesMidi() const { return false; }
 bool PultecEQP1AAudioProcessor::isMidiEffect() const { return false; }
 double PultecEQP1AAudioProcessor::getTailLengthSeconds() const { return 0.05; }
 
-int PultecEQP1AAudioProcessor::getNumPrograms() { return 6; }
+int PultecEQP1AAudioProcessor::getNumPrograms() { return 12; }
 int PultecEQP1AAudioProcessor::getCurrentProgram() { return currentPresetIndex; }
 
 void PultecEQP1AAudioProcessor::setCurrentProgram(int index)
@@ -100,12 +103,18 @@ const juce::String PultecEQP1AAudioProcessor::getProgramName(int index)
 {
     switch (index)
     {
-        case 0: return "1. Flat Tube & Iron Line Amp (Default)";
-        case 1: return "2. Kick & Sub Low-End Trick (20 CPS)";
-        case 2: return "3. Bass Guitar Tight & Heavy (30 CPS)";
-        case 3: return "4. Lead Vocal Silk & Presence (5k + 12k)";
-        case 4: return "5. Drum Bus Punch & Cymbal Silk";
-        case 5: return "6. Mastering Analog Air & Glue";
+        case 0:  return "01. Pure Paterson Iron (Flat Tube Line Amp)";
+        case 1:  return "02. Octane Sub Cannon (Kick Drum 20 CPS)";
+        case 2:  return "03. Cervini Stadium Shells (Drum Bus Smash)";
+        case 3:  return "04. Royal Blood Doom Grind (Bass Guitar 30 CPS)";
+        case 4:  return "05. Bad Omens Neon Silk (Modern Lead Vocal)";
+        case 5:  return "06. Weeknd Velvet Stack (BGV & Vocal Bus)";
+        case 6:  return "07. Spiritbox Djent Wall (Electric Guitar Bite)";
+        case 7:  return "08. Nashville Silver Pick (Acoustic Sparkle)";
+        case 8:  return "09. Travis 808 Tectonic (Sub Bass & 808 Weight)";
+        case 9:  return "10. Billie Whisper Air (Intimate Pop Vocal 16k)";
+        case 10: return "11. Abbey Road Stereo Halo (Side-Channel Air)";
+        case 11: return "12. Sterling Sound Vinyl Master (2-Bus Glue)";
         default: return "Preset";
     }
 }
@@ -114,16 +123,20 @@ void PultecEQP1AAudioProcessor::changeProgramName(int, const juce::String&) {}
 
 void PultecEQP1AAudioProcessor::applyFactoryPreset(int index)
 {
-    currentPresetIndex = std::clamp(index, 0, 5);
+    currentPresetIndex = std::clamp(index, 0, 11);
     auto setParam = [this](const char* id, float plainVal)
     {
         if (auto* p = apvts.getParameter(id))
             p->setValueNotifyingHost(p->convertTo0to1(plainVal));
     };
 
+    // Reset common defaults
+    setParam("eq_in", 1.0f);
+    setParam("bypass", 0.0f);
+
     switch (currentPresetIndex)
     {
-        case 0: // Flat Tube & Iron Line Amp
+        case 0: // 01. Pure Paterson Iron (Flat Tube Line Amp)
             setParam("low_freq", 1.0f);       // 30 CPS
             setParam("low_boost", 0.0f);
             setParam("low_atten", 0.0f);
@@ -132,75 +145,185 @@ void PultecEQP1AAudioProcessor::applyFactoryPreset(int index)
             setParam("bandwidth", 5.0f);
             setParam("high_atten_freq", 2.0f);// 20 KCS
             setParam("high_atten", 0.0f);
-            setParam("tube_drive_db", 2.5f);
+            setParam("tube_drive_db", 3.0f);
             setParam("routing_mode", 3.0f);   // Dual Mono Analog
             break;
 
-        case 1: // Kick & Sub Low-End Trick (20 CPS)
+        case 1: // 02. Octane Sub Cannon (Kick Drum 20 CPS)
             setParam("low_freq", 0.0f);       // 20 CPS
-            setParam("low_boost", 4.2f);
-            setParam("low_atten", 2.8f);
+            setParam("low_boost", 5.2f);
+            setParam("low_atten", 3.8f);
             setParam("high_boost_freq", 3.0f);// 8 KCS
-            setParam("high_boost", 3.2f);
+            setParam("high_boost", 3.6f);
             setParam("bandwidth", 4.5f);
             setParam("high_atten_freq", 2.0f);// 20 KCS
-            setParam("high_atten", 1.5f);
-            setParam("tube_drive_db", 4.5f);
+            setParam("high_atten", 1.8f);
+            setParam("tube_drive_db", 5.0f);
             setParam("routing_mode", 3.0f);
             break;
 
-        case 2: // Bass Guitar Tight & Heavy (30 CPS)
+        case 2: // 03. Cervini Stadium Shells (Drum Bus Smash)
             setParam("low_freq", 1.0f);       // 30 CPS
-            setParam("low_boost", 4.5f);
-            setParam("low_atten", 3.4f);
-            setParam("high_boost_freq", 1.0f);// 4 KCS
-            setParam("high_boost", 2.8f);
-            setParam("bandwidth", 3.5f);
-            setParam("high_atten_freq", 1.0f);// 10 KCS
+            setParam("low_boost", 4.2f);
+            setParam("low_atten", 3.0f);
+            setParam("high_boost_freq", 5.0f);// 12 KCS
+            setParam("high_boost", 4.0f);
+            setParam("bandwidth", 6.5f);
+            setParam("high_atten_freq", 2.0f);// 20 KCS
             setParam("high_atten", 2.2f);
             setParam("tube_drive_db", 5.5f);
             setParam("routing_mode", 3.0f);
             break;
 
-        case 3: // Lead Vocal Silk & Presence
-            setParam("low_freq", 4.0f);       // 100 CPS
-            setParam("low_boost", 1.6f);
-            setParam("low_atten", 2.4f);
+        case 3: // 04. Royal Blood Doom Grind (Bass Guitar 30 CPS)
+            setParam("low_freq", 1.0f);       // 30 CPS
+            setParam("low_boost", 5.6f);
+            setParam("low_atten", 4.2f);
+            setParam("high_boost_freq", 1.0f);// 4 KCS
+            setParam("high_boost", 3.8f);
+            setParam("bandwidth", 3.8f);
+            setParam("high_atten_freq", 1.0f);// 10 KCS
+            setParam("high_atten", 2.8f);
+            setParam("tube_drive_db", 6.5f);
+            setParam("routing_mode", 3.0f);
+            break;
+
+        case 4: // 05. Bad Omens Neon Silk (Modern Lead Vocal)
+            setParam("low_freq", 3.0f);       // 100 CPS
+            setParam("low_boost", 2.2f);
+            setParam("low_atten", 2.8f);
             setParam("high_boost_freq", 5.0f);// 12 KCS
-            setParam("high_boost", 4.6f);
-            setParam("bandwidth", 7.2f);      // Broad silky skirt
+            setParam("high_boost", 5.4f);
+            setParam("bandwidth", 7.2f);
             setParam("high_atten_freq", 2.0f);// 20 KCS
             setParam("high_atten", 2.0f);
+            setParam("tube_drive_db", 4.0f);
+            setParam("routing_mode", 3.0f);
+            break;
+
+        case 5: // 06. Weeknd Velvet Stack (BGV & Vocal Bus)
+            setParam("low_freq", 2.0f);       // 60 CPS
+            setParam("low_boost", 1.2f);
+            setParam("low_atten", 3.6f);
+            setParam("high_boost_freq", 6.0f);// 16 KCS
+            setParam("high_boost", 5.0f);
+            setParam("bandwidth", 8.0f);
+            setParam("high_atten_freq", 1.0f);// 10 KCS
+            setParam("high_atten", 3.2f);
             setParam("tube_drive_db", 3.5f);
             setParam("routing_mode", 3.0f);
             break;
 
-        case 4: // Drum Bus Punch & Cymbal Silk
-            setParam("low_freq", 1.0f);       // 30 CPS
-            setParam("low_boost", 3.4f);
-            setParam("low_atten", 2.2f);
-            setParam("high_boost_freq", 4.0f);// 10 KCS
-            setParam("high_boost", 3.0f);
-            setParam("bandwidth", 6.5f);
-            setParam("high_atten_freq", 2.0f);// 20 KCS
-            setParam("high_atten", 2.4f);
+        case 6: // 07. Spiritbox Djent Wall (Electric Guitar Bite)
+            setParam("low_freq", 2.0f);       // 60 CPS
+            setParam("low_boost", 2.8f);
+            setParam("low_atten", 3.6f);
+            setParam("high_boost_freq", 1.0f);// 4 KCS
+            setParam("high_boost", 3.6f);
+            setParam("bandwidth", 4.2f);
+            setParam("high_atten_freq", 1.0f);// 10 KCS
+            setParam("high_atten", 2.6f);
             setParam("tube_drive_db", 4.8f);
             setParam("routing_mode", 3.0f);
             break;
 
-        case 5: // Mastering Analog Air & Glue
-            setParam("low_freq", 0.0f);       // 20 CPS
+        case 7: // 08. Nashville Silver Pick (Acoustic Sparkle)
+            setParam("low_freq", 2.0f);       // 60 CPS
             setParam("low_boost", 1.8f);
-            setParam("low_atten", 1.1f);
-            setParam("high_boost_freq", 6.0f);// 16 KCS
-            setParam("high_boost", 2.6f);
-            setParam("bandwidth", 8.0f);      // Very broad air
+            setParam("low_atten", 3.2f);
+            setParam("high_boost_freq", 4.0f);// 10 KCS
+            setParam("high_boost", 4.6f);
+            setParam("bandwidth", 7.0f);
             setParam("high_atten_freq", 2.0f);// 20 KCS
-            setParam("high_atten", 0.8f);
-            setParam("tube_drive_db", 2.0f);
+            setParam("high_atten", 1.4f);
+            setParam("tube_drive_db", 2.8f);
             setParam("routing_mode", 3.0f);
             break;
+
+        case 8: // 09. Travis 808 Tectonic (Sub Bass & 808 Weight)
+            setParam("low_freq", 0.0f);       // 20 CPS
+            setParam("low_boost", 6.6f);
+            setParam("low_atten", 4.8f);
+            setParam("high_boost_freq", 0.0f);// 3 KCS
+            setParam("high_boost", 2.5f);
+            setParam("bandwidth", 5.0f);
+            setParam("high_atten_freq", 0.0f);// 5 KCS
+            setParam("high_atten", 3.0f);
+            setParam("tube_drive_db", 7.0f);
+            setParam("routing_mode", 1.0f);   // Mid Only
+            break;
+
+        case 9: // 10. Billie Whisper Air (Intimate Pop Vocal 16k)
+            setParam("low_freq", 3.0f);       // 100 CPS
+            setParam("low_boost", 2.4f);
+            setParam("low_atten", 3.0f);
+            setParam("high_boost_freq", 6.0f);// 16 KCS
+            setParam("high_boost", 6.4f);
+            setParam("bandwidth", 8.5f);
+            setParam("high_atten_freq", 2.0f);// 20 KCS
+            setParam("high_atten", 1.6f);
+            setParam("tube_drive_db", 3.2f);
+            setParam("routing_mode", 3.0f);
+            break;
+
+        case 10: // 11. Abbey Road Stereo Halo (Side-Channel Air)
+            setParam("low_freq", 1.0f);       // 30 CPS
+            setParam("low_boost", 0.0f);
+            setParam("low_atten", 2.5f);
+            setParam("high_boost_freq", 6.0f);// 16 KCS
+            setParam("high_boost", 5.2f);
+            setParam("bandwidth", 8.2f);
+            setParam("high_atten_freq", 2.0f);// 20 KCS
+            setParam("high_atten", 1.0f);
+            setParam("tube_drive_db", 3.8f);
+            setParam("routing_mode", 2.0f);   // Side Only
+            break;
+
+        case 11: // 12. Sterling Sound Vinyl Master (2-Bus Glue)
+            setParam("low_freq", 0.0f);       // 20 CPS
+            setParam("low_boost", 2.2f);
+            setParam("low_atten", 1.6f);
+            setParam("high_boost_freq", 6.0f);// 16 KCS
+            setParam("high_boost", 3.0f);
+            setParam("bandwidth", 8.0f);
+            setParam("high_atten_freq", 2.0f);// 20 KCS
+            setParam("high_atten", 1.0f);
+            setParam("tube_drive_db", 2.5f);
+            setParam("routing_mode", 3.0f);   // Dual Mono Analog
+            break;
     }
+}
+
+juce::File PultecEQP1AAudioProcessor::getUserPresetsFolder() const
+{
+    auto dir = juce::File::getSpecialLocation(juce::File::userDocumentsDirectory)
+                   .getChildFile("CervinizatorAudio")
+                   .getChildFile("PultecEQP1A_Presets");
+    if (!dir.exists())
+        dir.createDirectory();
+    return dir;
+}
+
+bool PultecEQP1AAudioProcessor::saveUserPresetToFile(const juce::File& file)
+{
+    auto state = apvts.copyState();
+    std::unique_ptr<juce::XmlElement> xml(state.createXml());
+    if (xml == nullptr)
+        return false;
+    return xml->writeTo(file);
+}
+
+bool PultecEQP1AAudioProcessor::loadUserPresetFromFile(const juce::File& file)
+{
+    if (!file.existsAsFile())
+        return false;
+    std::unique_ptr<juce::XmlElement> xml = juce::XmlDocument::parse(file);
+    if (xml != nullptr && xml->hasTagName(apvts.state.getType()))
+    {
+        apvts.replaceState(juce::ValueTree::fromXml(*xml));
+        return true;
+    }
+    return false;
 }
 
 void PultecEQP1AAudioProcessor::prepareToPlay(double sampleRate, int)
@@ -264,14 +387,12 @@ void PultecEQP1AAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, j
 
     dspEngine.processBlock(left, right, buffer.getNumSamples());
 
-    // Apply recommended input gain automatically when Shift+LMB calibration finishes
-    if (dspEngine.isCalibrationComplete())
+    // Apply recommended input gain ONCE when Shift+LMB calibration finishes, then release knob!
+    float recDb = 0.0f;
+    if (dspEngine.consumeCalibrationResult(recDb))
     {
         if (auto* p = apvts.getParameter("input_db"))
-        {
-            const float recDb = dspEngine.getRecommendedInputDb();
             p->setValueNotifyingHost(p->convertTo0to1(recDb));
-        }
     }
 }
 
