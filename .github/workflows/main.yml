@@ -10,12 +10,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Build VST3 Plugin (Windows x64)
+      - name: Patch & Build VST3 Plugin (Windows x64)
         shell: bash
         run: |
           SRC_DIR="."
           if [ -f "PULTEC_EQP1A_VST3/CMakeLists.txt" ]; then SRC_DIR="PULTEC_EQP1A_VST3"; fi
-          cmake -S "$SRC_DIR" -B build -DCMAKE_BUILD_TYPE=Release -DJUCE_ENABLE_VST3_MANIFEST_GENERATOR=OFF
+          perl -0777 -pi -e 's/if\(TARGET juce_vst3_helper\).*?endif\(\)//gs' "$SRC_DIR/CMakeLists.txt"
+          perl -0777 -pi -e 's/COPY_PLUGIN_AFTER_BUILD FALSE/COPY_PLUGIN_AFTER_BUILD FALSE\n    VST3_AUTO_MANIFEST FALSE/g' "$SRC_DIR/CMakeLists.txt"
+          perl -0777 -pi -e 's/for \(juce::Component\* c : \{.*?\}\)/juce::Component* const hudComps[] = { \&presetBox, \&savePresetBtn, \&loadPresetBtn, \&routingBox, \&oversamplingBox, \&inputKnob, \&tubeDriveKnob, \&outputKnob, \&autoGainButton, \&analogHumButton };\n    for (juce::Component* c : hudComps)/gs' "$SRC_DIR/Source/PluginEditor.cpp"
+          perl -pi -e 's/name == "IN"/name == juce::String("IN")/g; s/name == "ON"/name == juce::String("ON")/g' "$SRC_DIR/Source/PluginEditor.cpp"
+          cmake -S "$SRC_DIR" -B build -DCMAKE_BUILD_TYPE=Release -DJUCE_ENABLE_VST3_MANIFEST_GENERATOR=OFF -DCMAKE_CXX_FLAGS="/utf-8"
           cmake --build build --config Release --target PultecEQP1A_VST3 --parallel
 
       - name: Upload Windows VST3 Bundle
@@ -31,7 +35,7 @@ jobs:
           [Setup]
           AppId={{D4A7E912-5B83-4F29-8C64-1E3A9B7D2F50}
           AppName=PULTEC EQP-1A ULTRA VST3
-          AppVersion=1.0.0
+          AppVersion=2.0.0
           AppPublisher=CervinizatorAudio
           DefaultDirName={commoncf64}\VST3
           DirExistsWarning=no
@@ -66,11 +70,15 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Build VST3 Plugin (macOS Universal x86_64 + arm64)
+      - name: Patch & Build VST3 Plugin (macOS Universal)
         shell: bash
         run: |
           SRC_DIR="."
           if [ -f "PULTEC_EQP1A_VST3/CMakeLists.txt" ]; then SRC_DIR="PULTEC_EQP1A_VST3"; fi
+          perl -0777 -pi -e 's/if\(TARGET juce_vst3_helper\).*?endif\(\)//gs' "$SRC_DIR/CMakeLists.txt"
+          perl -0777 -pi -e 's/COPY_PLUGIN_AFTER_BUILD FALSE/COPY_PLUGIN_AFTER_BUILD FALSE\n    VST3_AUTO_MANIFEST FALSE/g' "$SRC_DIR/CMakeLists.txt"
+          perl -0777 -pi -e 's/for \(juce::Component\* c : \{.*?\}\)/juce::Component* const hudComps[] = { \&presetBox, \&savePresetBtn, \&loadPresetBtn, \&routingBox, \&oversamplingBox, \&inputKnob, \&tubeDriveKnob, \&outputKnob, \&autoGainButton, \&analogHumButton };\n    for (juce::Component* c : hudComps)/gs' "$SRC_DIR/Source/PluginEditor.cpp"
+          perl -pi -e 's/name == "IN"/name == juce::String("IN")/g; s/name == "ON"/name == juce::String("ON")/g' "$SRC_DIR/Source/PluginEditor.cpp"
           cmake -S "$SRC_DIR" -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_OSX_ARCHITECTURES="x86_64;arm64" -DJUCE_ENABLE_VST3_MANIFEST_GENERATOR=OFF
           cmake --build build --config Release --target PultecEQP1A_VST3 --parallel
 
