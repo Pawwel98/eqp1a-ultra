@@ -21,6 +21,8 @@ jobs:
           perl -pi -e 's/if \(button\.getButtonText\(\)\.contains\("HUD"\).*/if (button.getButtonText().contains("HUD") || button.getButtonText().contains("ANALYZER"))/g' "$SRC_DIR/Source/PluginEditor.cpp"
           perl -pi -e 's/expandHudButton\.setButtonText\(".*?"\);/expandHudButton.setButtonText(juce::String::fromUTF8("\\xe2\\x96\\xb2 \\xd0\\xa0\\xd0\\x90\\xd0\\xa1\\xd0\\xa8\\xd0\\x98\\xd0\\xa0\\xd0\\x98\\xd0\\xa2\\xd0\\xac \/ ANALYZER \& PRESETS"));/g' "$SRC_DIR/Source/PluginEditor.cpp"
           perl -0777 -pi -e 's/expandHudButton\.setButtonText\(isHudExpanded\s*\?\s*".*?"\s*:\s*".*?"\);/expandHudButton.setButtonText(isHudExpanded ? juce::String::fromUTF8("\\xe2\\x96\\xbc \\xd0\\xa1\\xd0\\x9a\\xd0\\xa0\\xd0\\xab\\xd0\\xa2\\xd0\\xac HUD \/ COLLAPSE") : juce::String::fromUTF8("\\xe2\\x96\\xb2 \\xd0\\xa0\\xd0\\x90\\xd0\\xa1\\xd0\\xa8\\xd0\\x98\\xd0\\xa0\\xd0\\x98\\xd0\\xa2\\xd0\\xac \/ ANALYZER \& PRESETS"));/gs' "$SRC_DIR/Source/PluginEditor.cpp"
+          perl -0777 -pi -e 's/float startA = 0\.0f, endA = 0\.0f;\s*bool stopAtEnd = true;\s*slider\.getRotaryParameters\(startA, endA, stopAtEnd\);/const auto rotParams = slider.getRotaryParameters();\n    const float startA = rotParams.startAngleRadians;\n    const float endA = rotParams.endAngleRadians;/gs' "$SRC_DIR/Source/PluginEditor.cpp"
+          perl -pi -e 's/\bflags\b/chooserFlags/g' "$SRC_DIR/Source/PluginEditor.cpp"
           perl -pi -e 's/name == "IN"/name == juce::String("IN")/g; s/name == "ON"/name == juce::String("ON")/g' "$SRC_DIR/Source/PluginEditor.cpp"
           cmake -S "$SRC_DIR" -B build -DCMAKE_BUILD_TYPE=Release -DJUCE_ENABLE_VST3_MANIFEST_GENERATOR=OFF
           cmake --build build --config Release --target PultecEQP1A_VST3 --parallel
@@ -84,6 +86,8 @@ jobs:
           perl -pi -e 's/if \(button\.getButtonText\(\)\.contains\("HUD"\).*/if (button.getButtonText().contains("HUD") || button.getButtonText().contains("ANALYZER"))/g' "$SRC_DIR/Source/PluginEditor.cpp"
           perl -pi -e 's/expandHudButton\.setButtonText\(".*?"\);/expandHudButton.setButtonText(juce::String::fromUTF8("\\xe2\\x96\\xb2 \\xd0\\xa0\\xd0\\x90\\xd0\\xa1\\xd0\\xa8\\xd0\\x98\\xd0\\xa0\\xd0\\x98\\xd0\\xa2\\xd0\\xac \/ ANALYZER \& PRESETS"));/g' "$SRC_DIR/Source/PluginEditor.cpp"
           perl -0777 -pi -e 's/expandHudButton\.setButtonText\(isHudExpanded\s*\?\s*".*?"\s*:\s*".*?"\);/expandHudButton.setButtonText(isHudExpanded ? juce::String::fromUTF8("\\xe2\\x96\\xbc \\xd0\\xa1\\xd0\\x9a\\xd0\\xa0\\xd0\\xab\\xd0\\xa2\\xd0\\xac HUD \/ COLLAPSE") : juce::String::fromUTF8("\\xe2\\x96\\xb2 \\xd0\\xa0\\xd0\\x90\\xd0\\xa1\\xd0\\xa8\\xd0\\x98\\xd0\\xa0\\xd0\\x98\\xd0\\xa2\\xd0\\xac \/ ANALYZER \& PRESETS"));/gs' "$SRC_DIR/Source/PluginEditor.cpp"
+          perl -0777 -pi -e 's/float startA = 0\.0f, endA = 0\.0f;\s*bool stopAtEnd = true;\s*slider\.getRotaryParameters\(startA, endA, stopAtEnd\);/const auto rotParams = slider.getRotaryParameters();\n    const float startA = rotParams.startAngleRadians;\n    const float endA = rotParams.endAngleRadians;/gs' "$SRC_DIR/Source/PluginEditor.cpp"
+          perl -pi -e 's/\bflags\b/chooserFlags/g' "$SRC_DIR/Source/PluginEditor.cpp"
           perl -pi -e 's/name == "IN"/name == juce::String("IN")/g; s/name == "ON"/name == juce::String("ON")/g' "$SRC_DIR/Source/PluginEditor.cpp"
           cmake -S "$SRC_DIR" -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_OSX_ARCHITECTURES="x86_64;arm64" -DJUCE_ENABLE_VST3_MANIFEST_GENERATOR=OFF
           cmake --build build --config Release --target PultecEQP1A_VST3 --parallel
