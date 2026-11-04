@@ -26,11 +26,9 @@ void PultecRackLookAndFeel::drawRotarySlider(juce::Graphics& g, int x, int y, in
 
     if (style == StyleFlutedSkirted || style == StyleTrimKnob)
     {
-        // Soft drop shadow on the blue Pultec faceplate
         g.setColour(juce::Colours::black.withAlpha(0.58f));
         g.fillEllipse(cx - radius * 0.76f + 3.0f, cy - radius * 0.76f + 5.0f, radius * 1.52f, radius * 1.52f);
 
-        // Outer black/silver beveled skirt
         const float skirtR = radius * 0.76f;
         juce::ColourGradient skirtGrad(juce::Colour(0xff525860), cx - skirtR, cy - skirtR,
                                        juce::Colour(0xff121518), cx + skirtR, cy + skirtR, false);
@@ -38,18 +36,15 @@ void PultecRackLookAndFeel::drawRotarySlider(juce::Graphics& g, int x, int y, in
         g.setGradientFill(skirtGrad);
         g.fillEllipse(cx - skirtR, cy - skirtR, skirtR * 2.0f, skirtR * 2.0f);
 
-        // Silver machined rim ring (just like original Davies/Daka-Ware Pultec knobs)
         g.setColour(juce::Colour(0xffb8c0c8).withAlpha(0.65f));
         g.drawEllipse(cx - skirtR, cy - skirtR, skirtR * 2.0f, skirtR * 2.0f, 1.3f);
 
-        // Fluted black bakelite body (10 scalloped flutes)
         const float capR = radius * 0.62f;
         juce::ColourGradient capGrad(juce::Colour(0xff3a3f46), cx - capR * 0.6f, cy - capR * 0.6f,
                                      juce::Colour(0xff0d0f12), cx + capR * 0.7f, cy + capR * 0.7f, false);
         g.setGradientFill(capGrad);
         g.fillEllipse(cx - capR, cy - capR, capR * 2.0f, capR * 2.0f);
 
-        // Scalloped grip flutes around the circumference
         for (int r = 0; r < 10; ++r)
         {
             const float ribA = angle + (float)r * (juce::MathConstants<float>::twoPi / 10.0f) - juce::MathConstants<float>::halfPi;
@@ -61,7 +56,6 @@ void PultecRackLookAndFeel::drawRotarySlider(juce::Graphics& g, int x, int y, in
             g.drawEllipse(fx - 3.6f, fy - 3.6f, 7.2f, 7.2f, 0.8f);
         }
 
-        // Inner concave bakelite center cap
         const float innerR = capR * 0.58f;
         juce::ColourGradient innerGrad(juce::Colour(0xff14171a), cx - innerR, cy - innerR,
                                        juce::Colour(0xff2c3036), cx + innerR, cy + innerR, false);
@@ -70,23 +64,20 @@ void PultecRackLookAndFeel::drawRotarySlider(juce::Graphics& g, int x, int y, in
         g.setColour(juce::Colour(0xff4a5058).withAlpha(0.6f));
         g.drawEllipse(cx - innerR, cy - innerR, innerR * 2.0f, innerR * 2.0f, 1.1f);
 
-        // White engraved indicator line on the outer skirt
         const float indA = angle - juce::MathConstants<float>::halfPi;
         g.setColour(juce::Colour(0xfff5efe2));
         g.drawLine(cx + std::cos(indA) * (innerR * 0.95f), cy + std::sin(indA) * (innerR * 0.95f),
                    cx + std::cos(indA) * (skirtR * 0.98f), cy + std::sin(indA) * (skirtR * 0.98f), 2.5f);
     }
-    else // StyleChickenHead (Authentic Pultec black bakelite pointer switch for CPS / KCS / ATTEN SEL)
+    else
     {
         const float baseR = radius * 0.44f;
         g.setColour(juce::Colours::black.withAlpha(0.55f));
         g.fillEllipse(cx - baseR + 3.0f, cy - baseR + 5.0f, baseR * 2.0f, baseR * 2.0f);
 
-        // Chrome hex bushing nut under switch
         g.setColour(juce::Colour(0xffa4aeb8));
         g.fillEllipse(cx - baseR * 0.72f, cy - baseR * 0.72f, baseR * 1.44f, baseR * 1.44f);
 
-        // Vintage tapered bar/pointer body (matches CPS / KCS / ATTEN SEL on hardware photo)
         juce::Path pointer;
         pointer.startNewSubPath(-baseR * 0.38f,  baseR * 0.68f);
         pointer.lineTo         ( baseR * 0.38f,  baseR * 0.68f);
@@ -94,11 +85,9 @@ void PultecRackLookAndFeel::drawRotarySlider(juce::Graphics& g, int x, int y, in
         pointer.lineTo         (-baseR * 0.22f, -radius * 0.76f);
         pointer.closeSubPath();
 
-        // Drop shadow of pointer bar
         g.setColour(juce::Colours::black.withAlpha(0.50f));
         g.fillPath(pointer, juce::AffineTransform::rotation(angle).translated(cx + 3.0f, cy + 5.0f));
 
-        // Glossy black bakelite pointer body
         juce::ColourGradient ptrGrad(juce::Colour(0xff32373d), cx - baseR, cy - baseR,
                                      juce::Colour(0xff0c0e10), cx + baseR, cy + baseR, false);
         g.setGradientFill(ptrGrad);
@@ -107,13 +96,11 @@ void PultecRackLookAndFeel::drawRotarySlider(juce::Graphics& g, int x, int y, in
         g.setColour(juce::Colour(0xff5a626b));
         g.strokePath(pointer, juce::PathStrokeType(1.2f), juce::AffineTransform::rotation(angle).translated(cx, cy));
 
-        // Center round turret cap
         g.setColour(juce::Colour(0xff181b1f));
         g.fillEllipse(cx - baseR * 0.56f, cy - baseR * 0.56f, baseR * 1.12f, baseR * 1.12f);
         g.setColour(juce::Colour(0xff4e565e));
         g.drawEllipse(cx - baseR * 0.56f, cy - baseR * 0.56f, baseR * 1.12f, baseR * 1.12f, 1.0f);
 
-        // Crisp white pointer line on tip
         const float indA = angle - juce::MathConstants<float>::halfPi;
         g.setColour(juce::Colour(0xfff5efe2));
         g.drawLine(cx + std::cos(indA) * (baseR * 0.30f), cy + std::sin(indA) * (baseR * 0.30f),
@@ -127,14 +114,12 @@ void PultecRackLookAndFeel::drawToggleButton(juce::Graphics& g, juce::ToggleButt
     const auto name = button.getButtonText();
     auto r = button.getLocalBounds().toFloat();
 
-    // 1. Hardware Left Chrome Bat Toggle Switch ("IN")
-    if (name == "IN")
+    if (name == juce::String("IN"))
     {
         const float cx = r.getCentreX();
         const float cy = r.getCentreY() + 4.0f;
         const bool eqIn = button.getToggleState();
 
-        // Chrome hex washer & bushing
         g.setColour(juce::Colours::black.withAlpha(0.5f));
         g.fillEllipse(cx - 14.0f, cy - 12.0f, 28.0f, 28.0f);
 
@@ -148,7 +133,6 @@ void PultecRackLookAndFeel::drawToggleButton(juce::Graphics& g, juce::ToggleButt
         g.setColour(juce::Colour(0xff181c20));
         g.fillEllipse(cx - 6.5f, cy - 6.5f, 13.0f, 13.0f);
 
-        // Chrome bat lever pointing UP when IN, DOWN when OUT
         const float tipY = eqIn ? (cy - 18.0f) : (cy + 18.0f);
         g.setColour(juce::Colours::black.withAlpha(0.45f));
         g.drawLine(cx + 2.0f, cy + 2.0f, cx + 2.0f, tipY + 3.0f, 7.5f);
@@ -160,12 +144,11 @@ void PultecRackLookAndFeel::drawToggleButton(juce::Graphics& g, juce::ToggleButt
         return;
     }
 
-    // 2. Hardware Right OFF / ON Rotary Switch ("ON" -> attached to "bypass" parameter)
-    if (name == "ON")
+    if (name == juce::String("ON"))
     {
         const float cx = r.getCentreX();
         const float cy = r.getCentreY() + 6.0f;
-        const bool isBypassed = button.getToggleState(); // true = OFF (Bypassed), false = ON (Active)
+        const bool isBypassed = button.getToggleState();
         const float angle = isBypassed ? -0.48f : 0.48f;
 
         const float knobR = 20.0f;
@@ -179,7 +162,6 @@ void PultecRackLookAndFeel::drawToggleButton(juce::Graphics& g, juce::ToggleButt
         g.setColour(juce::Colour(0xff565e66));
         g.drawEllipse(cx - knobR, cy - knobR, knobR * 2.0f, knobR * 2.0f, 1.2f);
 
-        // Pointer tip
         juce::Path tip;
         tip.addTriangle(-5.0f, 4.0f, 5.0f, 4.0f, 0.0f, -knobR * 1.18f);
         g.setColour(juce::Colour(0xff1a1d22));
@@ -191,7 +173,6 @@ void PultecRackLookAndFeel::drawToggleButton(juce::Graphics& g, juce::ToggleButt
         return;
     }
 
-    // 3. Standard HUD Toggle Button (AUTO GAIN / 60Hz HUM)
     auto box = r.reduced(2.0f);
     const bool on = button.getToggleState();
     juce::Colour bg = on ? juce::Colour(0xff2b6496) : juce::Colour(0xff18222c);
@@ -215,7 +196,7 @@ void PultecRackLookAndFeel::drawButtonBackground(juce::Graphics& g, juce::Button
 {
     auto r = button.getLocalBounds().toFloat().reduced(1.5f);
     juce::Colour bg = juce::Colour(0xff1c2b3a);
-    if (button.getButtonText().contains("HUD") || button.getButtonText().contains("РАСШИРИТЬ") || button.getButtonText().contains("СКРЫТЬ"))
+    if (button.getButtonText().contains("HUD") || button.getButtonText().contains("ANALYZER"))
         bg = juce::Colour(0xff233a4e);
     if (isHighlighted) bg = bg.brighter(0.15f);
     if (isDown)        bg = bg.darker(0.15f);
@@ -245,30 +226,24 @@ PultecEQP1AAudioProcessorEditor::PultecEQP1AAudioProcessorEditor(PultecEQP1AAudi
     const float stdStart = juce::MathConstants<float>::pi * 1.22f;
     const float stdEnd   = juce::MathConstants<float>::pi * 2.78f;
 
-    // 5 Fluted Skirted Knobs (0..10 scale)
     configDial(lowBoostKnob,  PultecRackLookAndFeel::StyleFlutedSkirted, 0.0, stdStart, stdEnd);
     configDial(lowAttenKnob,  PultecRackLookAndFeel::StyleFlutedSkirted, 0.0, stdStart, stdEnd);
     configDial(highBoostKnob, PultecRackLookAndFeel::StyleFlutedSkirted, 0.0, stdStart, stdEnd);
     configDial(highAttenKnob, PultecRackLookAndFeel::StyleFlutedSkirted, 0.0, stdStart, stdEnd);
     configDial(bandwidthKnob, PultecRackLookAndFeel::StyleFlutedSkirted, 5.0, stdStart, stdEnd);
 
-    // 3 Vintage Pointer Selector Switches matching angles on image_f1567c.png
-    // CPS: 20, 30, 60, 100 (top arc from -52 deg to +52 deg)
     configDial(lowFreqSelector, PultecRackLookAndFeel::StyleChickenHead, 1.0,
                juce::MathConstants<float>::twoPi - 0.90f,
                juce::MathConstants<float>::twoPi + 0.90f);
 
-    // KCS: 3, 4, 5, 8, 10, 12, 16 (wide top arc from -90 deg to +90 deg)
     configDial(highBoostFreqSelector, PultecRackLookAndFeel::StyleChickenHead, 5.0,
                juce::MathConstants<float>::twoPi - 1.52f,
                juce::MathConstants<float>::twoPi + 1.52f);
 
-    // ATTEN SEL: 5, 10, 20 (compact top arc from -36 deg to +36 deg)
     configDial(highAttenFreqSelector, PultecRackLookAndFeel::StyleChickenHead, 2.0,
                juce::MathConstants<float>::twoPi - 0.62f,
                juce::MathConstants<float>::twoPi + 0.62f);
 
-    // Top HUD Trim Knobs
     configDial(inputKnob,     PultecRackLookAndFeel::StyleTrimKnob, 0.0, stdStart, stdEnd);
     configDial(tubeDriveKnob, PultecRackLookAndFeel::StyleTrimKnob, 2.5, stdStart, stdEnd);
     configDial(outputKnob,    PultecRackLookAndFeel::StyleTrimKnob, 0.0, stdStart, stdEnd);
@@ -286,7 +261,8 @@ PultecEQP1AAudioProcessorEditor::PultecEQP1AAudioProcessorEditor(PultecEQP1AAudi
     addAndMakeVisible(autoGainButton);
     addAndMakeVisible(analogHumButton);
 
-    expandHudButton.setButtonText("▲ РАСШИРИТЬ / ANALYZER & PRESETS");
+    expandHudButton.setButtonText(juce::String::fromUTF8(
+        "\xe2\x96\xb2 \xd0\xa0\xd0\x90\xd0\xa1\xd0\xa8\xd0\x98\xd0\xa0\xd0\x98\xd0\xa2\xd0\xac / ANALYZER & PRESETS"));
     expandHudButton.onClick = [this]() { toggleHudExpanded(); };
     addAndMakeVisible(expandHudButton);
 
@@ -345,7 +321,6 @@ PultecEQP1AAudioProcessorEditor::PultecEQP1AAudioProcessorEditor(PultecEQP1AAudi
     routingAtt       = std::make_unique<ComboAttachment>(apvts, "routing_mode",     routingBox);
     oversamplingAtt  = std::make_unique<ComboAttachment>(apvts, "oversampling",     oversamplingBox);
 
-    // Start in Closed / Authentic Hardware View by default (960 x 360)
     isHudExpanded = false;
     setSize(kWidth, kRackHeight);
 
@@ -362,8 +337,8 @@ void PultecEQP1AAudioProcessorEditor::toggleHudExpanded()
 {
     isHudExpanded = !isHudExpanded;
     expandHudButton.setButtonText(isHudExpanded
-        ? "▼ СКРЫТЬ HUD / COLLAPSE"
-        : "▲ РАСШИРИТЬ / ANALYZER & PRESETS");
+        ? juce::String::fromUTF8("\xe2\x96\xbc \xd0\xa1\xd0\x9a\xd0\xa0\xd0\xab\xd0\xa2\xd0\xac HUD / COLLAPSE")
+        : juce::String::fromUTF8("\xe2\x96\xb2 \xd0\xa0\xd0\x90\xd0\xa1\xd0\xa8\xd0\x98\xd0\xa0\xd0\x98\xd0\xa2\xd0\xac / ANALYZER & PRESETS"));
     setSize(kWidth, isHudExpanded ? (kRackHeight + kHudHeight) : kRackHeight);
     resized();
     repaint();
@@ -621,7 +596,6 @@ void PultecEQP1AAudioProcessorEditor::drawEQCurveDisplay(juce::Graphics& g, juce
     g.setColour(juce::Colour(0xff68c8ff));
     g.strokePath(eqPath, juce::PathStrokeType(2.4f));
 
-    // THD Harmonic Saturation Meter on right edge of analyzer
     const float harm = std::clamp(audioProcessor.dspEngine.getHarmonicMeter(), 0.0f, 1.0f);
     juce::Rectangle<float> thdBox(area.getRight() - 28.0f, plot.getY(), 18.0f, plot.getHeight());
     g.setColour(juce::Colour(0xff0d151d));
@@ -638,18 +612,15 @@ void PultecEQP1AAudioProcessorEditor::drawEQCurveDisplay(juce::Graphics& g, juce
 
 void PultecEQP1AAudioProcessorEditor::drawRackChassis(juce::Graphics& g, juce::Rectangle<float> area)
 {
-    // Authentic Pultec EQP-1A Vintage Teal-Blue Faceplate (color-matched to image_f1567c.png!)
     juce::ColourGradient panelGrad(juce::Colour(0xff38647c), area.getX(), area.getY(),
                                    juce::Colour(0xff2b5166), area.getX(), area.getBottom(), false);
     panelGrad.addColour(0.5, juce::Colour(0xff325a70));
     g.setGradientFill(panelGrad);
     g.fillRoundedRectangle(area, 4.0f);
 
-    // Subtle metallic border bevel
     g.setColour(juce::Colour(0xff6b94ab).withAlpha(0.55f));
     g.drawRoundedRectangle(area.reduced(1.0f), 4.0f, 1.5f);
 
-    // 4 Chrome Rack-Mount Slotted Screws at the left and right edges (just like image_f1567c.png)
     auto drawChromeScrew = [&](float sx, float sy)
     {
         g.setColour(juce::Colours::black.withAlpha(0.55f));
@@ -670,18 +641,15 @@ void PultecEQP1AAudioProcessorEditor::drawRackChassis(juce::Graphics& g, juce::R
 
     const float ry = area.getY();
 
-    // Engraved White/Cream Silkscreen Titles matching image_f1567c.png
     g.setColour(juce::Colour(0xfff4efe2));
     g.setFont(juce::Font(13.0f, juce::Font::bold));
 
-    // Top row labels: BOOST | ATTEN | BOOST | ATTEN | ATTEN SEL
     g.drawText("BOOST",     (int)lowBoostKnob.getX() - 10,          (int)ry + 18, 128, 18, juce::Justification::centred);
     g.drawText("ATTEN",     (int)lowAttenKnob.getX() - 10,          (int)ry + 18, 128, 18, juce::Justification::centred);
     g.drawText("BOOST",     (int)highBoostKnob.getX() - 10,         (int)ry + 18, 128, 18, juce::Justification::centred);
     g.drawText("ATTEN",     (int)highAttenKnob.getX() - 10,         (int)ry + 18, 128, 18, juce::Justification::centred);
     g.drawText("ATTEN SEL", (int)highAttenFreqSelector.getX() - 16, (int)ry + 18, 128, 18, juce::Justification::centred);
 
-    // Bottom row labels: IN | CPS + LOW FREQUENCY | BANDWIDTH (SHARP / BROAD) | KCS + HIGH FREQUENCY | OFF / ON
     g.drawText("IN",             (int)eqInSwitch.getX() - 6,             (int)eqInSwitch.getY() - 22, 60, 16, juce::Justification::centred);
     g.drawText("CPS",            (int)lowFreqSelector.getX() - 10,       (int)lowFreqSelector.getY() - 36, 116, 16, juce::Justification::centred);
     g.drawText("LOW FREQUENCY",  (int)lowFreqSelector.getX() - 28,       (int)lowFreqSelector.getBottom() + 8, 152, 16, juce::Justification::centred);
@@ -699,12 +667,10 @@ void PultecEQP1AAudioProcessorEditor::drawRackChassis(juce::Graphics& g, juce::R
     g.drawText("OFF",            (int)powerSwitch.getX() - 12,           (int)powerSwitch.getY() - 16, 40, 14, juce::Justification::centred);
     g.drawText("ON",             (int)powerSwitch.getRight() - 24,       (int)powerSwitch.getY() - 10, 40, 14, juce::Justification::centred);
 
-    // Subtle vintage Pulse Techniques badge on top-center of rack
     g.setColour(juce::Colour(0xfff4efe2).withAlpha(0.75f));
     g.setFont(juce::Font(11.0f, juce::Font::bold));
     g.drawText("PULTEC PROGRAM EQUALIZER EQP-1A", 340, (int)ry + 4, 280, 14, juce::Justification::centred);
 
-    // Radial number markings around all 8 rotary controls (exactly like image_f1567c.png)
     const std::vector<juce::String> scale0to10 = { "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10" };
     drawRadialDialNumbers(g, lowBoostKnob,  scale0to10, 4.0f, 10.5f);
     drawRadialDialNumbers(g, lowAttenKnob,  scale0to10, 4.0f, 10.5f);
@@ -712,12 +678,11 @@ void PultecEQP1AAudioProcessorEditor::drawRackChassis(juce::Graphics& g, juce::R
     drawRadialDialNumbers(g, highAttenKnob, scale0to10, 4.0f, 10.5f);
     drawRadialDialNumbers(g, bandwidthKnob, scale0to10, 4.0f, 10.5f);
 
-    drawRadialDialNumbers(g, lowFreqSelector,       { "20", "30", "60", "100" },                  6.0f, 11.0f);
-    drawRadialDialNumbers(g, highBoostFreqSelector, { "3", "4", "5", "8", "10", "12", "16" },     7.0f, 11.0f);
-    drawRadialDialNumbers(g, highAttenFreqSelector, { "5", "10", "20" },                          6.0f, 11.0f);
+    drawRadialDialNumbers(g, lowFreqSelector,       { "20", "30", "60", "100" },              6.0f, 11.0f);
+    drawRadialDialNumbers(g, highBoostFreqSelector, { "3", "4", "5", "8", "10", "12", "16" }, 7.0f, 11.0f);
+    drawRadialDialNumbers(g, highAttenFreqSelector, { "5", "10", "20" },                      6.0f, 11.0f);
 
-    // Red Faceted Ruby Jewel Pilot Lamp (positioned above OFF/ON switch, below ATTEN SEL, matching image_f1567c.png)
-    const bool active = !powerSwitch.getToggleState(); // bypass == false means ON
+    const bool active = !powerSwitch.getToggleState();
     const float harmGlow = std::clamp(audioProcessor.dspEngine.getHarmonicMeter(), 0.0f, 1.0f);
     const juce::Rectangle<float> jewel(756.0f, ry + 186.0f, 38.0f, 38.0f);
 
@@ -731,7 +696,6 @@ void PultecEQP1AAudioProcessorEditor::drawRackChassis(juce::Graphics& g, juce::R
         g.fillEllipse(jewel.expanded(15.0f));
     }
 
-    // Chrome bezel ring around ruby lamp
     juce::ColourGradient ringGrad(juce::Colour(0xfff0f4f8), jewel.getX(), jewel.getY(),
                                   juce::Colour(0xff6c7680), jewel.getRight(), jewel.getBottom(), false);
     g.setGradientFill(ringGrad);
@@ -739,7 +703,6 @@ void PultecEQP1AAudioProcessorEditor::drawRackChassis(juce::Graphics& g, juce::R
     g.setColour(juce::Colour(0xff232a30));
     g.drawEllipse(jewel, 1.3f);
 
-    // Ruby faceted glass dome
     const auto innerRuby = jewel.reduced(5.5f);
     juce::ColourGradient rubyGrad(active ? juce::Colour(0xffff4830).brighter(0.35f * harmGlow) : juce::Colour(0xff4a1512),
                                   innerRuby.getX() + 6.0f, innerRuby.getY() + 6.0f,
@@ -748,7 +711,6 @@ void PultecEQP1AAudioProcessorEditor::drawRackChassis(juce::Graphics& g, juce::R
     g.setGradientFill(rubyGrad);
     g.fillEllipse(innerRuby);
 
-    // Facet specular highlight
     g.setColour(juce::Colours::white.withAlpha(active ? 0.65f : 0.18f));
     g.fillEllipse(innerRuby.getX() + 5.0f, innerRuby.getY() + 4.0f, 8.0f, 6.0f);
 }
@@ -757,7 +719,6 @@ void PultecEQP1AAudioProcessorEditor::paint(juce::Graphics& g)
 {
     g.fillAll(juce::Colour(0xff101820));
 
-    // 1. If Expanded: Draw the Slide-Out Top Mastering & Analyzer HUD
     if (isHudExpanded)
     {
         juce::Rectangle<float> topArea(10.0f, 8.0f, (float)getWidth() - 20.0f, (float)kHudHeight - 12.0f);
@@ -773,7 +734,6 @@ void PultecEQP1AAudioProcessorEditor::paint(juce::Graphics& g)
         g.setFont(juce::Font(13.5f, juce::Font::bold));
         g.drawText("MASTERING HUD & PRESET MANAGER", (int)ctrlBox.getX() + 10, (int)ctrlBox.getY() + 6, 360, 18, juce::Justification::centred);
 
-        // Labels for Trim Knobs inside HUD
         auto drawTrimLabel = [&](juce::Slider& s, const juce::String& name)
         {
             auto b = s.getBounds();
@@ -790,12 +750,10 @@ void PultecEQP1AAudioProcessorEditor::paint(juce::Graphics& g)
         drawTrimLabel(outputKnob,    "OUTPUT");
     }
 
-    // 2. Draw Authentic Pultec EQP-1A Hardware Rack Faceplate
     const float rackY = isHudExpanded ? (float)kHudHeight : 0.0f;
     juce::Rectangle<float> rackArea(4.0f, rackY + 4.0f, (float)getWidth() - 8.0f, (float)kRackHeight - 8.0f);
     drawRackChassis(g, rackArea);
 
-    // 3. Shift+LMB Input Auto-Calibration Overlay Modal
     if (showCalibrationBanner || audioProcessor.dspEngine.isCalibrationActive())
     {
         auto modal = getLocalBounds().toFloat().withSizeKeepingCentre(470.0f, 118.0f);
@@ -835,7 +793,6 @@ void PultecEQP1AAudioProcessorEditor::paint(juce::Graphics& g)
         }
     }
 
-    // 4. Hover Tooltip Bar
     if (activeTooltipText.isNotEmpty())
     {
         auto tipRect = juce::Rectangle<float>(44.0f, (float)getHeight() - 26.0f, (float)getWidth() - 88.0f, 22.0f);
@@ -853,13 +810,14 @@ void PultecEQP1AAudioProcessorEditor::resized()
 {
     const int ry = isHudExpanded ? kHudHeight : 0;
 
-    // Expand / Collapse HUD button sits neatly in the top-right bezel of the rack faceplate
     expandHudButton.setBounds(kWidth - 265, ry + 7, 232, 22);
 
-    // Show/hide top HUD controls based on expansion state
-    for (juce::Component* c : { (juce::Component*)&presetBox, &savePresetBtn, &loadPresetBtn,
-                                &routingBox, &oversamplingBox, &inputKnob, &tubeDriveKnob,
-                                &outputKnob, &autoGainButton, &analogHumButton })
+    juce::Component* const hudComps[] = {
+        &presetBox, &savePresetBtn, &loadPresetBtn,
+        &routingBox, &oversamplingBox, &inputKnob, &tubeDriveKnob,
+        &outputKnob, &autoGainButton, &analogHumButton
+    };
+    for (juce::Component* c : hudComps)
     {
         c->setVisible(isHudExpanded);
     }
@@ -882,9 +840,6 @@ void PultecEQP1AAudioProcessorEditor::resized()
         analogHumButton.setBounds(hx + 282, 142, 86, 28);
     }
 
-    //==========================================================================
-    // AUTHENTIC PULTEC EQP-1A FRONT-PANEL GEOMETRY (Exact match to image_f1567c.png)
-    //==========================================================================
     // TOP ROW: [LOW BOOST]   [LOW ATTEN]      [HIGH BOOST]   [HIGH ATTEN]      [ATTEN SEL]
     const int topRowY = ry + 48;
     lowBoostKnob.setBounds         ( 76, topRowY, 108, 108);
