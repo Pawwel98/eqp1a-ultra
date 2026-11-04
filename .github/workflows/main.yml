@@ -1,0 +1,81 @@
+name: Build PULTEC EQP-1A ULTRA VST3 & Setup EXE
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build VST3 Plugin (Windows x64)
+        shell: bash
+        run: |
+          SRC_DIR="."
+          if [ -f "PULTEC_EQP1A_VST3/CMakeLists.txt" ]; then SRC_DIR="PULTEC_EQP1A_VST3"; fi
+          cmake -S "$SRC_DIR" -B build -DCMAKE_BUILD_TYPE=Release -DJUCE_ENABLE_VST3_MANIFEST_GENERATOR=OFF
+          cmake --build build --config Release --target PultecEQP1A_VST3 --parallel
+
+      - name: Upload Windows VST3 Bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: PULTEC-EQP1A-ULTRA-VST3-Windows-x64
+          path: build/PultecEQP1A_artefacts/**/VST3/**
+
+      - name: Build Classic Windows Installer (PULTEC_EQP1A_ULTRA_Setup.exe)
+        shell: bash
+        run: |
+          cat << 'EOF' > installer.iss
+          [Setup]
+          AppId={{D4A7E912-5B83-4F29-8C64-1E3A9B7D2F50}
+          AppName=PULTEC EQP-1A ULTRA VST3
+          AppVersion=1.0.0
+          AppPublisher=CervinizatorAudio
+          DefaultDirName={commoncf64}\VST3
+          DirExistsWarning=no
+          AppendDefaultDirName=no
+          DisableProgramGroupPage=yes
+          PrivilegesRequired=admin
+          ArchitecturesAllowed=x64compatible
+          ArchitecturesInstallIn64BitMode=x64compatible
+          Compression=lzma2/max
+          SolidCompression=yes
+          WizardStyle=modern
+          OutputDir=Output
+          OutputBaseFilename=PULTEC_EQP1A_ULTRA_Setup
+
+          [Languages]
+          Name: "english"; MessagesFile: "compiler:Default.isl"
+          Name: "russian"; MessagesFile: "compiler:Languages\Russian.isl"
+
+          [Files]
+          Source: "build\PultecEQP1A_artefacts\Release\VST3\PULTEC EQP-1A ULTRA.vst3\*"; DestDir: "{app}\PULTEC EQP-1A ULTRA.vst3"; Flags: ignoreversion recursesubdirs createallsubdirs
+          EOF
+          "/c/Program Files (x86)/Inno Setup 6/ISCC.exe" installer.iss
+
+      - name: Upload Windows Setup EXE Installer
+        uses: actions/upload-artifact@v4
+        with:
+          name: PULTEC-EQP1A-ULTRA-Windows-Installer-EXE
+          path: Output/PULTEC_EQP1A_ULTRA_Setup.exe
+
+  build-macos:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build VST3 Plugin (macOS Universal x86_64 + arm64)
+        shell: bash
+        run: |
+          SRC_DIR="."
+          if [ -f "PULTEC_EQP1A_VST3/CMakeLists.txt" ]; then SRC_DIR="PULTEC_EQP1A_VST3"; fi
+          cmake -S "$SRC_DIR" -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_OSX_ARCHITECTURES="x86_64;arm64" -DJUCE_ENABLE_VST3_MANIFEST_GENERATOR=OFF
+          cmake --build build --config Release --target PultecEQP1A_VST3 --parallel
+
+      - name: Upload macOS Universal VST3 Bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: PULTEC-EQP1A-ULTRA-VST3-macOS-Universal
+          path: build/PultecEQP1A_artefacts/**/VST3/**
