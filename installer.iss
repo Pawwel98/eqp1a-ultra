@@ -1,8 +1,8 @@
 [Setup]
 AppId={{D4A7E912-5B83-4F29-8C64-1E3A9B7D2F50}
-AppName=PULTEC EQP-1A ULTRA VST3
-AppVersion=1.0.0
-AppPublisher=CervinizatorAudio
+AppName=AQUAMARINE PLUG - EQP - 1 Ultra VST3
+AppVersion=2.1.0
+AppPublisher=AQUAMARINE PLUG
 DefaultDirName={commoncf64}\VST3
 DirExistsWarning=no
 AppendDefaultDirName=no
@@ -14,11 +14,11 @@ Compression=lzma2/max
 SolidCompression=yes
 WizardStyle=modern
 OutputDir=Output
-OutputBaseFilename=PULTEC_EQP1A_ULTRA_Setup
+OutputBaseFilename=AQUAMARINE_PLUG_EQP1_Ultra_Setup
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
 Name: "russian"; MessagesFile: "compiler:Languages\Russian.isl"
 
 [Files]
-Source: "build\PultecEQP1A_artefacts\Release\VST3\PULTEC EQP-1A ULTRA.vst3\*"; DestDir: "{app}\PULTEC EQP-1A ULTRA.vst3"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "build\PultecEQP1A_artefacts\Release\VST3\*\Contents\*"; DestDir: "{app}\EQP - 1 Ultra.vst3\Contents"; Flags: ignoreversion recursesubdirs createallsubdirs

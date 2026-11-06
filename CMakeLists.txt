@@ -1,10 +1,12 @@
 cmake_minimum_required(VERSION 3.22)
 
-project(PultecEQP1A VERSION 1.0.0)
+project(PultecEQP1A VERSION 2.1.0)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+
+set(JUCE_ENABLE_VST3_MANIFEST_GENERATOR OFF CACHE BOOL "" FORCE)
 
 include(FetchContent)
 FetchContent_Declare(
@@ -16,24 +18,21 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(JUCE)
 
 juce_add_plugin(PultecEQP1A
-    COMPANY_NAME "CervinizatorAudio"
+    COMPANY_NAME "AQUAMARINE PLUG"
     COMPANY_WEBSITE "https://github.com"
-    COMPANY_EMAIL "info@cervinizator.audio"
+    COMPANY_EMAIL "info@aquamarineplug.audio"
     IS_SYNTH FALSE
     NEEDS_MIDI_INPUT FALSE
     NEEDS_MIDI_OUTPUT FALSE
     IS_MIDI_EFFECT FALSE
     EDITOR_WANTS_KEYBOARD_FOCUS FALSE
     COPY_PLUGIN_AFTER_BUILD FALSE
-    PLUGIN_MANUFACTURER_CODE Crvz
-    PLUGIN_CODE Peq1
+    VST3_AUTO_MANIFEST FALSE
+    PLUGIN_MANUFACTURER_CODE Aqmp
+    PLUGIN_CODE Eqp1
     FORMATS VST3 Standalone
-    PRODUCT_NAME "PULTEC EQP-1A ULTRA"
+    PRODUCT_NAME "EQP - 1 Ultra"
 )
-
-if(TARGET juce_vst3_helper)
-    set_target_properties(juce_vst3_helper PROPERTIES EXCLUDE_FROM_ALL TRUE)
-endif()
 
 target_sources(PultecEQP1A
     PRIVATE
@@ -50,7 +49,7 @@ target_compile_definitions(PultecEQP1A
         JUCE_USE_CURL=0
         JUCE_VST3_CAN_REPLACE_VST2=0
         JUCE_DISPLAY_SPLASH_SCREEN=0
-        JUCE_ENABLE_VST3_MANIFEST_GENERATOR=0
+        JUCE_MODAL_LOOPS_PERMITTED=1
 )
 
 target_link_libraries(PultecEQP1A
