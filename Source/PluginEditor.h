@@ -9,9 +9,9 @@ class PultecRackLookAndFeel : public juce::LookAndFeel_V4
 public:
     enum KnobStyle
     {
-        StyleFlutedSkirted = 0, // Classic silver-skirted black Pultec Boost/Atten/Bandwidth dial (0..10)
-        StyleChickenHead   = 1, // Vintage pointer selector switch (CPS / KCS / ATTEN SEL)
-        StyleTrimKnob      = 2  // Compact utility trim knob (INPUT / DRIVE / OUTPUT in Top HUD)
+        StyleFlutedSkirted = 0, // Worn silver-skirted black Pultec Boost/Atten/Bandwidth dial (0..10)
+        StyleChickenHead   = 1, // Weathered vintage pointer selector switch (CPS / KCS / ATTEN SEL)
+        StyleTrimKnob      = 2  // Industrial weathered trim knob (INPUT / DRIVE / OUTPUT in Tube Bay)
     };
 
     PultecRackLookAndFeel();
@@ -27,6 +27,10 @@ public:
                               const juce::Colour& backgroundColour,
                               bool shouldDrawButtonAsHighlighted,
                               bool shouldDrawButtonAsDown) override;
+
+    void drawComboBox(juce::Graphics& g, int width, int height, bool isButtonDown,
+                      int buttonX, int buttonY, int buttonW, int buttonH,
+                      juce::ComboBox& box) override;
 };
 
 class InputCalibrationSlider : public juce::Slider
@@ -62,6 +66,11 @@ private:
     void saveUserPresetDialog();
     void loadUserPresetDialog();
 
+    void generateProceduralTextures();
+    void drawScratchedText(juce::Graphics& g, const juce::String& text,
+                           int x, int y, int w, int h, float fontSize,
+                           juce::Justification just = juce::Justification::centred);
+    void drawTubeBayBehindGrille(juce::Graphics& g, juce::Rectangle<float> area);
     void drawEQCurveDisplay(juce::Graphics& g, juce::Rectangle<float> area);
     void drawRackChassis(juce::Graphics& g, juce::Rectangle<float> area);
     void drawRadialDialNumbers(juce::Graphics& g, const juce::Slider& slider,
@@ -72,15 +81,16 @@ private:
     PultecEQP1AAudioProcessor& audioProcessor;
     PultecRackLookAndFeel pultecLNF;
 
+    juce::Image weatheredRackImage;
+    juce::Image blackGrilleMeshImage;
+
     bool isHudExpanded = false;
     static constexpr int kWidth         = 960;
     static constexpr int kRackHeight    = 360;
     static constexpr int kHudHeight     = 220;
 
-    // Expand / Collapse Top HUD Button
-    juce::TextButton expandHudButton { "EXPAND HUD" };
+    juce::TextButton expandHudButton { "EXPAND TUBE BAY" };
 
-    // Main Pultec EQP-1A3 Hardware Controls (exact 2-row hardware layout)
     // Top Row: Low Boost, Low Atten, High Boost, High Atten, High Atten Sel
     juce::Slider lowBoostKnob;
     juce::Slider lowAttenKnob;
@@ -93,9 +103,9 @@ private:
     juce::Slider lowFreqSelector;
     juce::Slider bandwidthKnob;
     juce::Slider highBoostFreqSelector;
-    juce::ToggleButton powerSwitch  { "ON" }; // Maps inverted to "bypass" parameter
+    juce::ToggleButton powerSwitch  { "ON" };
 
-    // Expandable Top HUD Controls
+    // Expandable Tube Bay Controls
     InputCalibrationSlider inputKnob;
     juce::Slider tubeDriveKnob;
     juce::Slider outputKnob;
